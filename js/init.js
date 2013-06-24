@@ -18,7 +18,7 @@ function initialize() {
    		var divText = "<p><strong>Current Opened Tabs</strong></p>";
    		
 		for(var i = 0; i < tabs.length; i++) {       
-			divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\">" + tabs[i].title + "<br>";
+			divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\" checked=\"true\">" + tabs[i].title + "<br>";
    		} 
 
    		/// set the list of tabs with checkboxes in the html
@@ -29,7 +29,7 @@ function initialize() {
 	document.getElementById("bookmark_button").addEventListener('click',getBookmarks,false);
 	document.getElementById("copy_button").addEventListener('click',copyUrls,false);
 	document.getElementById("selector").addEventListener('click',selectorClicked,false);
-	document.getElementById("selector").value = "1";
+	document.getElementById("selector").value = "0";
 }
 
 function selectorClicked() {
@@ -146,6 +146,7 @@ function saveClicked() {
 				chrome.bookmarks.create({parentId: result.id, title: checkedUrls[i].value, url: checkedUrls[i].value });
 			}	
 		});
+		getBookmarks();
 		cancelClicked();
 	} else {
 		
