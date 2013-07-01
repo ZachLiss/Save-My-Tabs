@@ -283,11 +283,14 @@ function maxOrMin() {
 				bIds.push(bookmark.id);
 			});
 
+			s += "<div id=\"delete_"+id+"\" value=\""+val+"\">";
 			s += "<button id=\"b_"+id+"\" class=\"d_button\" value=\""+val+"\">Delete: "+document.getElementById(val).innerHTML+"</button>";
+			s += "</div>";
 			console.log(s);
 			document.getElementById("d_"+val).innerHTML = s;
 
-			document.getElementById("b_"+id).addEventListener('click',dClicked,false);
+			//document.getElementById("b_"+id).addEventListener('click',dClicked,false);
+			document.getElementById("b_"+id).addEventListener('click',confirmDeletion,false);
 			for(var i = 0; i < bIds.length; i++) {
 				document.getElementById("x_"+bIds[i]).addEventListener('click',xClicked,false);
 				document.getElementById("a_"+bIds[i]).addEventListener('click',aClicked,false);
@@ -299,6 +302,27 @@ function maxOrMin() {
 		document.getElementById("d_"+val).innerHTML = "";
 		this.innerHTML = "+";
 	}
+}
+
+/// confirm the deletion of folder
+function confirmDeletion() {
+	var id = document.getElementById(this.value).value;
+	var val = this.value;
+	var s = "<button id=\"y_"+id+"\" class=\"y_button\" value=\""+val+"\">Yes, Delete</button>";
+	s += "<button id=\"n_"+id+"\" class=\"d_button n_button\" value=\""+val+"\">No, Cancel</button>";
+	document.getElementById("delete_"+id).innerHTML = s;
+
+	document.getElementById("y_"+id).addEventListener('click',dClicked,false);
+	document.getElementById("n_"+id).addEventListener('click',nClicked,false);
+}
+
+/// the user decided not to delete the folder
+function nClicked() {
+	var id = document.getElementById(this.value).value;
+	var val = this.value;
+	var s = "<button id=\"b_"+id+"\" class=\"d_button\" value=\""+val+"\">Delete: "+document.getElementById(val).innerHTML+"</button>";
+	document.getElementById("delete_"+id).innerHTML = s;
+	document.getElementById("b_"+id).addEventListener('click',confirmDeletion,false);
 }
 
 /// delete the folder

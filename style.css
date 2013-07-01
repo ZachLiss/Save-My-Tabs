@@ -62,7 +62,7 @@ html {
    width: 300px;
 }
 
-.d_button{
+.d_button {
    width: 300px;
    -moz-box-shadow:inset 0px 1px 0px 0px #f5978e;
    -webkit-box-shadow:inset 0px 1px 0px 0px #f5978e;
@@ -80,9 +80,46 @@ html {
    padding:6px 24px;
    text-decoration:none;
    text-shadow:1px 1px 0px #810e05;
-}.d_button:hover {
+}
+
+.d_button:hover {
    background-color:#c62d1f;
-}.d_button:active {
+}
+
+.d_button:active {
+   position:relative;
+   top:1px;
+}
+
+.n_button {
+   width: 150px;
+}
+
+.y_button {
+   width: 150px;
+   -moz-box-shadow:inset 0px 1px 0px 0px #a4e271;
+   -webkit-box-shadow:inset 0px 1px 0px 0px #a4e271;
+   box-shadow:inset 0px 1px 0px 0px #a4e271;
+   background-color:#89c403;
+   -moz-border-radius:6px;
+   -webkit-border-radius:6px;
+   border-radius:6px;
+   border:1px solid #74b807;
+   display:inline-block;
+   color:#ffffff;
+   font-family:arial;
+   font-size:15px;
+   font-weight:bold;
+   padding:6px 24px;
+   text-decoration:none;
+   text-shadow:1px 1px 0px #528009;
+}
+
+.y_button:hover {
+   background-color:#77a809;
+}
+
+.y_button:active {
    position:relative;
    top:1px;
 }
