@@ -2,7 +2,8 @@
 	"manifest_version": 2,
 
 	"name": "Save my Tabs",
-	"version": "1.0.1",
+	"version": "2.0.0",
+	"options_page": "options.html",
 
 	"permissions": [
 		"bookmarks",

@@ -50,6 +50,43 @@ html {
    background: #1b435e;
 }
 
+.b_button {
+   width: 270px;
+}
+
+.p_button {
+   width: 31px;
+}
+
+.m_button {
+   width: 300px;
+}
+
+.d_button{
+   width: 300px;
+   -moz-box-shadow:inset 0px 1px 0px 0px #f5978e;
+   -webkit-box-shadow:inset 0px 1px 0px 0px #f5978e;
+   box-shadow:inset 0px 1px 0px 0px #f5978e;
+   background-color:#f24537;
+   -moz-border-radius:6px;
+   -webkit-border-radius:6px;
+   border-radius:6px;
+   border:1px solid #d02718;
+   display:inline-block;
+   color:#ffffff;
+   font-family:arial;
+   font-size:15px;
+   font-weight:bold;
+   padding:6px 24px;
+   text-decoration:none;
+   text-shadow:1px 1px 0px #810e05;
+}.d_button:hover {
+   background-color:#c62d1f;
+}.d_button:active {
+   position:relative;
+   top:1px;
+}
+
 #folder_name { 
 	border: 2px
 	solid #3e779d; 

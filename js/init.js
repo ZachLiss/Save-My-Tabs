@@ -1,4 +1,5 @@
-window.onload = initialize;
+//window.onload = initialize;
+document.addEventListener('DOMContentLoaded', initialize);
 
 /// initialize the extension when the window loads
 function initialize() {
@@ -26,10 +27,12 @@ function initialize() {
 	});
 
 	/// set up the proper eventListeners for the events
-	document.getElementById("bookmark_button").addEventListener('click',getBookmarks,false);
+	document.getElementById("bookmark_button").addEventListener('click',drawBookmarks,false);
 	document.getElementById("copy_button").addEventListener('click',copyUrls,false);
 	document.getElementById("selector").addEventListener('click',selectorClicked,false);
 	document.getElementById("selector").value = "0";
+
+	drawDefaultOpenButtons();
 }
 
 function selectorClicked() {
@@ -75,7 +78,7 @@ function copyUrls() {
 	setTimeout(function() {emptyNot()}, 3000);
 }
 
-function getBookmarks() {
+function drawBookmarks() {
 	chrome.bookmarks.getTree(function(bookmarks) {
 		drawBookmarkSection(bookmarks);
 	});
@@ -118,6 +121,7 @@ function drawBookmarkDropdownOptions(bookmarks, depth) {
 	});
 }
 
+
 /// create textfield for new folder
 function newFolderClicked() {
 	newFolder = true;
@@ -138,7 +142,6 @@ function saveClicked() {
 
 	if(newFolder) {
 		var newTitle = document.getElementById("folder_name").value;
-
 		
 		chrome.bookmarks.create({parentId: pId, title: newTitle}, function(result) {
 			//var checkedUrls = document.querySelectorAll('.url:checked');
@@ -146,7 +149,7 @@ function saveClicked() {
 				chrome.bookmarks.create({parentId: result.id, title: checkedUrls[i].value, url: checkedUrls[i].value });
 			}	
 		});
-		getBookmarks();
+		drawBookmarks();
 		cancelClicked();
 	} else {
 		
@@ -174,3 +177,171 @@ function emptyNot() {
 	document.getElementById("notifications").innerHTML = "";
 }
 
+////////////////////////////////////////////////
+//// Section to Manage Opening of Bookmarks ////
+////////////////////////////////////////////////
+
+/// variables needed
+var divString1;
+var curMax;
+var bNum;
+
+function drawDefaultOpenButtons() {
+	var max = localStorage["default_max"];
+	chrome.bookmarks.getTree(function(bookmarks) {
+		drawBookmarkButtonsSection(bookmarks, max);
+	});
+}
+
+/// draw the bookmark buttons
+function drawBookmarkButtonsSection(bookmarks, max) {
+	divString1 = "";
+	curMax = 0;
+	bNum = 1;
+	drawBookmarkButtons(bookmarks, -1, max);
+	if(max == -1) {
+		divString1 += "<button id=\"more_button\" class=\"m_button button\">Less...</button>";
+	} else {
+		divString1 += "<button id=\"more_button\" class=\"m_button button\">More...</button>";
+	}
+	document.getElementById("open_section").innerHTML = divString1;
+
+	/// add actionlisteners to the buttons
+	bNum--;
+	for(var i = 1; i <= bNum; i++) {
+		document.getElementById(i).addEventListener('click',openBookmarks,false);
+		document.getElementById("b_"+i).addEventListener('click',maxOrMin,false);
+	}
+	document.getElementById("more_button").addEventListener('click',moreOrLess,false);
+}
+
+/// dropdown or close the list of bookmark buttons
+function moreOrLess() {
+	if(this.innerHTML == "More...") {
+		chrome.bookmarks.getTree(function(bookmarks) {
+			drawBookmarkButtonsSection(bookmarks, -1);
+		});
+	} else {
+		drawDefaultOpenButtons();
+	}
+}
+
+/// draw the list of bookmark buttons (currently ignoring their depth in tree)
+function drawBookmarkButtons(bookmarks, depth, max) {
+	bookmarks.forEach(function(bookmark) {
+		if(bookmark.url != null) return;
+	
+		//console.log(bookmark.id + ' - ' + bookmark.title + ' - ' + bookmark.children.title);
+		if(max != -1 && curMax < max) {
+			console.log(bookmark.id + ' - ' + bookmark.title + ' - ' + bookmark.children.title);
+			if(bookmark.id == 0) { drawBookmarkButtons(bookmark.children, depth+1, max); }
+			else {
+				divString1 += "<div id=\"bd_"+bNum+"\">";
+				divString1 += "<button class=\"b_button button\" id=\""+bNum+"\" value=\""+bookmark.id+"\">";
+				//for(var i = 0; i < depth; i++) divString1 += "--"; 
+				divString1 += bookmark.title + "</button>";
+				divString1 += "<button class=\"p_button button\" id=\"b_"+bNum+"\" value=\""+bNum+"\">+</button>";
+				divString1 += "<div id=\"d_"+bNum+"\"></div></div>";
+				curMax++;
+				bNum++;
+			}
+			if(bookmark.children && bookmark.id != 0) drawBookmarkButtons(bookmark.children, depth+1, max);
+		} else if(max == -1){
+			//console.log(bookmark.id + ' - ' + bookmark.title + ' - ' + bookmark.children.title);
+			if(bookmark.id == 0) { drawBookmarkButtons(bookmark.children, depth+1, max); }
+			else {
+				divString1 += "<div id=\"bd_"+bNum+"\">";
+				divString1 += "<button class=\"b_button button\" id=\""+bNum+"\" value=\""+bookmark.id+"\">";
+				//for(var i = 0; i < depth; i++) divString1 += "--"; 
+				divString1 += bookmark.title + "</button>";
+				divString1 += "<button class=\"p_button button\" id=\"b_"+bNum+"\" value=\""+bNum+"\">+</button>";
+				divString1 += "<div id=\"d_"+bNum+"\"></div></div>";
+				bNum++;
+			}
+			if(bookmark.children && bookmark.id != 0) drawBookmarkButtons(bookmark.children, depth+1, max);
+		}
+	});
+}
+
+/// maximize or minimize the clicked bookmark folder
+function maxOrMin() {
+	var html = this.innerHTML;
+	var id = document.getElementById(this.value).value;
+	var val = this.value;
+	var s = "";
+	
+	if(html == "+") {
+		/// add all the urls to the div with id d_this.value
+		chrome.bookmarks.getChildren(id, function(bookmarks){
+			console.log(bookmarks);
+			var bIds = new Array();
+			bookmarks.forEach(function(bookmark) {
+				if(bookmark.url == null) return;
+				s += "<div id=\"xd_"+bookmark.id+"\"><button id=\"x_"+bookmark.id+"\" value=\""+bookmark.id+"\">X</button>";
+				s += "<a id=\"a_"+bookmark.id+"\" value=\""+bookmark.url+"\" href=\"#\">"+bookmark.url+"</a></div>";
+				//s += "<a href=\""+bookmark.url+"\" target=\"_blank\">"+bookmark.url+"</a></div>";
+				bIds.push(bookmark.id);
+			});
+
+			s += "<button id=\"b_"+id+"\" class=\"d_button\" value=\""+val+"\">Delete: "+document.getElementById(val).innerHTML+"</button>";
+			console.log(s);
+			document.getElementById("d_"+val).innerHTML = s;
+
+			document.getElementById("b_"+id).addEventListener('click',dClicked,false);
+			for(var i = 0; i < bIds.length; i++) {
+				document.getElementById("x_"+bIds[i]).addEventListener('click',xClicked,false);
+				document.getElementById("a_"+bIds[i]).addEventListener('click',aClicked,false);
+			}
+		});
+		
+		this.innerHTML = "-";
+	} else {
+		document.getElementById("d_"+val).innerHTML = "";
+		this.innerHTML = "+";
+	}
+}
+
+/// delete the folder
+function dClicked() {
+	var id = document.getElementById(this.value).value;
+	var val = this.value;
+	chrome.bookmarks.removeTree(id);
+	document.getElementById("bd_"+val).innerHTML="";
+}
+
+/// delete the url
+function xClicked() {
+	chrome.bookmarks.remove(this.value);
+	document.getElementById("xd_"+this.value).innerHTML = "";
+}
+
+/// open the url
+function aClicked() {
+	var win = document.getElementById("rad").checked;
+	if(win) {
+		chrome.tabs.create({url: this.innerHTML,active: false});
+	} else {
+		chrome.windows.create({left: 10,focused: false, url: this.innerHTML});
+	}
+}
+
+/// open all urls in bookmark folder
+function openBookmarks() {
+	var id = document.getElementById(this.id).value;
+	var urls = new Array();
+	
+	chrome.bookmarks.getChildren(id, function(bookmarks){
+			bookmarks.forEach(function(bookmark){
+				if(bookmark.url == null) return;
+				urls.push(bookmark.url);
+			});
+		var win = document.getElementById("rad").checked;
+		if(win) {
+			urls.forEach(function(link) {
+				chrome.tabs.create({url: link, active: false});
+			});
+		} else {
+			chrome.windows.create({left: 10,focused: false, url: urls});
+		}
+	});
+}
