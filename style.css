@@ -1,9 +1,9 @@
 html {
-	background-color: #F0F0F0;
+	background-color: #F5F5F5;
 }
 
 #main {
-	width: 300px;
+	width: 315px;
 	white-space: nowrap;
 	font-family: Arial;
 }
@@ -16,6 +16,49 @@ html {
 	background-color: #B0FBFF;
 	float: center;
 	width: 247px;
+}
+
+#selector {
+   color: #000000;
+}
+
+#about {
+   float: center;
+   font-size: 11px;
+   text-align: center;
+   color: black;
+}
+
+.f_button {
+   border-top: 1px solid #C9C7C8;
+   background: #E8E8E8;
+   background: -webkit-gradient(linear, left top, left bottom, from(#C4C4C4), to(#E8E8E8));
+   background: -webkit-linear-gradient(top, #C4C4C4, #E8E8E8);
+   background: -moz-linear-gradient(top, #C4C4C4, #E8E8E8);
+   background: -ms-linear-gradient(top, #C4C4C4, #E8E8E8);
+   background: -o-linear-gradient(top, #C4C4C4, #E8E8E8);
+   padding: 5px 10px;
+   -webkit-border-radius: 8px;
+   -moz-border-radius: 8px;
+   border-radius: 8px;
+   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   box-shadow: rgba(0,0,0,1) 0 1px 0;
+  /* text-shadow: rgba(0,0,0,.4) 0 1px 0;*/
+   color: black;
+   font-size: 12px;
+   font-family: Arial;
+   text-decoration: none;
+   vertical-align: middle;
+}
+.f_button:hover {
+   border-top-color: #ADADAD;
+   background: #ADADAD;
+   color: black;
+}
+.f_button:active {
+   border-top-color: #C9C7C8;
+   background: #ADADAD;
 }
 
 .button {
@@ -51,7 +94,7 @@ html {
 }
 
 .b_button {
-   width: 270px;
+   width: 275px;
 }
 
 .p_button {
@@ -59,11 +102,15 @@ html {
 }
 
 .m_button {
-   width: 300px;
+   width: 306px;
+}
+
+.c_button {
+   width: 97px;
 }
 
 .d_button {
-   width: 300px;
+   width: 306px;
    -moz-box-shadow:inset 0px 1px 0px 0px #f5978e;
    -webkit-box-shadow:inset 0px 1px 0px 0px #f5978e;
    box-shadow:inset 0px 1px 0px 0px #f5978e;

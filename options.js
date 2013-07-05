@@ -14,6 +14,8 @@ function save_options() {
       
 // Restores select box state to saved value from localStorage.
 function restore_options() {
+    setImageUrl();
+
     var favorite = localStorage["default_max"];
     if (!favorite) {
         return;
@@ -26,6 +28,11 @@ function restore_options() {
             break;
         }
     }
+}
+
+function setImageUrl() {
+    var url = chrome.extension.getURL("/images/DashBurst-Logo.png");
+    document.getElementById('target').src = url;
 }
 
 document.addEventListener('DOMContentLoaded', restore_options);

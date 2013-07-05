@@ -16,7 +16,7 @@ function initialize() {
    		}
 
    		/// list the titles of the opened tabs
-   		var divText = "<p><strong>Current Opened Tabs</strong></p>";
+   		var divText = ""//<p><strong>Current Opened Tabs</strong></p>";
    		
 		for(var i = 0; i < tabs.length; i++) {       
 			divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\" checked=\"true\">" + tabs[i].title + "<br>";
@@ -95,7 +95,7 @@ function drawBookmarkSection(bookmarks) {
 	drawBookmarkDropdownOptions(bookmarks, -1);
 
 	divString += "</select></div><br><div id=\"bookmark_text\"></div>";
-	divString += "<div id=\"bookmark_buttons\"><button id=\"nf_button\" class=\"button\">New folder</button><button id=\"save_button\" class=\"button\">Save</button><button id=\"cancel_button\" class=\"button\">Cancel</button></div>";
+	divString += "<div id=\"bookmark_buttons\"><button id=\"nf_button\" class=\"button c_button\">New folder</button><button id=\"save_button\" class=\"button c_button\">Save</button><button id=\"cancel_button\" class=\"button c_button\">Cancel</button></div>";
 
 	document.getElementById("bookmark_section").innerHTML = divString;
 
@@ -127,7 +127,7 @@ function newFolderClicked() {
 	newFolder = true;
 	var textField = document.getElementById("bookmark_text");
 	textField.innerHTML = "<input type=\"text\" placeholder=\"Folder Name\" id=\"folder_name\">";
-	document.getElementById("cancel_button").innerHTML = "Cancel New Folder";
+	document.getElementById("cancel_button").innerHTML = "Cancel";
 }
 
 /// save the selected urls where they need to go
@@ -200,9 +200,9 @@ function drawBookmarkButtonsSection(bookmarks, max) {
 	bNum = 1;
 	drawBookmarkButtons(bookmarks, -1, max);
 	if(max == -1) {
-		divString1 += "<button id=\"more_button\" class=\"m_button button\">Less...</button>";
+		divString1 += "<button id=\"more_button\" class=\"m_button f_button\">Less Bookmark Folders...</button>";
 	} else {
-		divString1 += "<button id=\"more_button\" class=\"m_button button\">More...</button>";
+		divString1 += "<button id=\"more_button\" class=\"m_button f_button\">More Bookmark Folders...</button>";
 	}
 	document.getElementById("open_section").innerHTML = divString1;
 
@@ -217,7 +217,7 @@ function drawBookmarkButtonsSection(bookmarks, max) {
 
 /// dropdown or close the list of bookmark buttons
 function moreOrLess() {
-	if(this.innerHTML == "More...") {
+	if(this.innerHTML == "More Bookmark Folders...") {
 		chrome.bookmarks.getTree(function(bookmarks) {
 			drawBookmarkButtonsSection(bookmarks, -1);
 		});
@@ -237,10 +237,10 @@ function drawBookmarkButtons(bookmarks, depth, max) {
 			if(bookmark.id == 0) { drawBookmarkButtons(bookmark.children, depth+1, max); }
 			else {
 				divString1 += "<div id=\"bd_"+bNum+"\">";
-				divString1 += "<button class=\"b_button button\" id=\""+bNum+"\" value=\""+bookmark.id+"\">";
+				divString1 += "<button class=\"b_button f_button\" id=\""+bNum+"\" value=\""+bookmark.id+"\">";
 				//for(var i = 0; i < depth; i++) divString1 += "--"; 
 				divString1 += bookmark.title + "</button>";
-				divString1 += "<button class=\"p_button button\" id=\"b_"+bNum+"\" value=\""+bNum+"\">+</button>";
+				divString1 += "<button class=\"p_button f_button\" id=\"b_"+bNum+"\" value=\""+bNum+"\">+</button>";
 				divString1 += "<div id=\"d_"+bNum+"\"></div></div>";
 				curMax++;
 				bNum++;
@@ -251,10 +251,10 @@ function drawBookmarkButtons(bookmarks, depth, max) {
 			if(bookmark.id == 0) { drawBookmarkButtons(bookmark.children, depth+1, max); }
 			else {
 				divString1 += "<div id=\"bd_"+bNum+"\">";
-				divString1 += "<button class=\"b_button button\" id=\""+bNum+"\" value=\""+bookmark.id+"\">";
+				divString1 += "<button class=\"b_button f_button\" id=\""+bNum+"\" value=\""+bookmark.id+"\">";
 				//for(var i = 0; i < depth; i++) divString1 += "--"; 
 				divString1 += bookmark.title + "</button>";
-				divString1 += "<button class=\"p_button button\" id=\"b_"+bNum+"\" value=\""+bNum+"\">+</button>";
+				divString1 += "<button class=\"p_button f_button\" id=\"b_"+bNum+"\" value=\""+bNum+"\">+</button>";
 				divString1 += "<div id=\"d_"+bNum+"\"></div></div>";
 				bNum++;
 			}
