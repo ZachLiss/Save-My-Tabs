@@ -2,16 +2,18 @@
 
 <html>
 <head>
+	<link href="options_style.css" type="text/css" rel="stylesheet">
+	<link href="http://fonts.googleapis.com/css?family=Dosis" rel="stylesheet" type="text/css">
 	<title>Bookmark My Tabs Options</title>
 </head>
 
 <body>
-
+<div id="wrap">
 <a href="http://www.dashburst.com" target="_blank">
-	<img id="target" src="DashBurst-Logo.png" style="max-width: 33%; max-height: 33%;">
+	<img id="target" src="DashBurst-Logo.png" style="max-width: 25%; max-height: 25%;">
 </a>
 
-<h1>Bookmark My Tabs Options</h1>
+<h2 id="title">Bookmark My Tabs Options</h2>
 
 Default Bookmark Buttons:
 <select id="num_default">
@@ -22,11 +24,19 @@ Default Bookmark Buttons:
 	<option value="5">5</option>
 	<option value="6">6</option>
 </select>
-<button id="save">Save</button>
+<br>
+Default Urls Selected:
+<select id="sel_def">
+	<option value="1">Select All</option>
+	<option value="0">Select None</option>
+</select>
+
+<button id="save" class="f_button">Save</button>
 <br>
 <div id="status"></div>
 
 <script src="options.js"></script>
+</div>
 </body>
 
 </html>

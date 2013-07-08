@@ -3,29 +3,35 @@
 <html>
 <head>
 	<link href="style.css" type="text/css" rel="stylesheet">
+	<link href="http://fonts.googleapis.com/css?family=Dosis" rel="stylesheet" type="text/css">
+
 	<script src="js/init.js"></script>
 </head>
 <body>
+	<div id="wrap">
+	
 	<div id="main">
 		<h1>Bookmark My Tabs</h1>
-		<a href="#" id="selector">None</a><p id="urlCount"></p>
+		<span id="sel"></span>
+		<p id="urlCount"></p>
 		<hr/>
 		<div id="listOfTabs"></div>
-		<hr/>
-		<div>
+		<!--<hr/>-->
+		<div id="saveButtons">
 			<button id="bookmark_button" class="button">Save to Bookmark Folder</button>
 			<button id="copy_button" class="button">Copy to Clipboard</button>
 		</div>
 		<div id="bookmark_section"></div>
 		<div id="notifications"></div>
 		<hr/>
-		<p><strong>Quick Launch</strong></p>
+		<p id="ql"><strong>Quick Launch</strong></p>
 		<div id="window_options">
 			<form>
-				<input type="radio" id="rad" name="win" value="cur" checked="true">Current Window
-				<input type="radio" name="win" value="new">New Window
+				<input type="radio" id="rad" name="win" value="cur" checked="true"> Current Window     
+				<input type="radio" id="rad2" name="win" value="new"> New Window
 			</form>
 		</div> 
+		
 		<div id="open_section"></div>
 	</div>
 	<hr/>
@@ -33,5 +39,9 @@
 	<div id="about">
 		<p>About <a href="http://www.dashburst.com/bookmark-my-tabs" target="_blank" title="Bookmark my Tabs">Bookmark My Tabs</a></p>
 	</div>
+
+	<!--end of #wrap-->
+	</div>
+
 </body>
 </html>

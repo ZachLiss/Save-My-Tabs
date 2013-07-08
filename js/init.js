@@ -3,6 +3,30 @@ document.addEventListener('DOMContentLoaded', initialize);
 
 /// initialize the extension when the window loads
 function initialize() {
+	var d = document.getElementById("sel");
+	
+	if(localStorage["default_sel"] == 1) {
+		d.innerHTML = "<input type=\"checkbox\" id=\"selector\" checked=\"true\">";
+	} else {
+		d.innerHTML = "<input type=\"checkbox\" id=\"selector\">";
+	}
+
+	drawListOfTabs();
+
+	/// set up the proper eventListeners for the events
+	document.getElementById("bookmark_button").addEventListener('click',drawBookmarks,false);
+	document.getElementById("copy_button").addEventListener('click',copyUrls,false);
+	document.getElementById("selector").addEventListener('click',selectorClicked,false);
+	if(localStorage["default_sel"] == 1) {
+		document.getElementById("selector").value = "0";
+	} else {
+		document.getElementById("selector").value = "1";
+	}
+
+	drawDefaultOpenButtons();
+}
+
+function drawListOfTabs() {
 
 	var div = document.getElementById("listOfTabs");
 
@@ -16,23 +40,19 @@ function initialize() {
    		}
 
    		/// list the titles of the opened tabs
-   		var divText = ""//<p><strong>Current Opened Tabs</strong></p>";
+   		var divText = ""//<p><strong>(Currently Opened Tabs)</strong></p>";
    		
-		for(var i = 0; i < tabs.length; i++) {       
-			divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\" checked=\"true\">" + tabs[i].title + "<br>";
+		for(var i = 0; i < tabs.length; i++) {
+			if(localStorage["default_sel"] == 1) {
+				divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\" checked=\"true\"> " + tabs[i].title + "<br>";
+			} else {
+				divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\"> " + tabs[i].title + "<br>";
+			}
    		} 
 
    		/// set the list of tabs with checkboxes in the html
    		div.innerHTML = divText;
 	});
-
-	/// set up the proper eventListeners for the events
-	document.getElementById("bookmark_button").addEventListener('click',drawBookmarks,false);
-	document.getElementById("copy_button").addEventListener('click',copyUrls,false);
-	document.getElementById("selector").addEventListener('click',selectorClicked,false);
-	document.getElementById("selector").value = "0";
-
-	drawDefaultOpenButtons();
 }
 
 function selectorClicked() {
@@ -90,7 +110,7 @@ var newFolder = false;
 
 /// draw the bookmark section
 function drawBookmarkSection(bookmarks) {
-	divString = "<h2>Bookmark list</h2><div id=\"bookmark_list\"><select id=\"selected_bookmark\">";
+	divString = "<h2 id=\"bl\">Bookmark list</h2><div id=\"bookmark_list\"><select id=\"selected_bookmark\">";
 
 	drawBookmarkDropdownOptions(bookmarks, -1);
 
@@ -126,7 +146,7 @@ function drawBookmarkDropdownOptions(bookmarks, depth) {
 function newFolderClicked() {
 	newFolder = true;
 	var textField = document.getElementById("bookmark_text");
-	textField.innerHTML = "<input type=\"text\" placeholder=\"Folder Name\" id=\"folder_name\">";
+	textField.innerHTML = "<input type=\"text\" placeholder=\" Folder Name\" id=\"folder_name\">";
 	document.getElementById("cancel_button").innerHTML = "Cancel";
 }
 
@@ -277,7 +297,7 @@ function maxOrMin() {
 			var bIds = new Array();
 			bookmarks.forEach(function(bookmark) {
 				if(bookmark.url == null) return;
-				s += "<div id=\"xd_"+bookmark.id+"\"><button id=\"x_"+bookmark.id+"\" value=\""+bookmark.id+"\">X</button>";
+				s += "<div id=\"xd_"+bookmark.id+"\"><button id=\"x_"+bookmark.id+"\" class=\"x_button\" value=\""+bookmark.id+"\">X</button>";
 				s += "<a id=\"a_"+bookmark.id+"\" value=\""+bookmark.url+"\" href=\"#\">"+bookmark.url+"</a></div>";
 				//s += "<a href=\""+bookmark.url+"\" target=\"_blank\">"+bookmark.url+"</a></div>";
 				bIds.push(bookmark.id);
@@ -344,6 +364,7 @@ function aClicked() {
 	var win = document.getElementById("rad").checked;
 	if(win) {
 		chrome.tabs.create({url: this.innerHTML,active: false});
+		//drawListOfTabs();
 	} else {
 		chrome.windows.create({left: 10,focused: false, url: this.innerHTML});
 	}
@@ -364,6 +385,7 @@ function openBookmarks() {
 			urls.forEach(function(link) {
 				chrome.tabs.create({url: link, active: false});
 			});
+			//drawListOfTabs();
 		} else {
 			chrome.windows.create({left: 10,focused: false, url: urls});
 		}
