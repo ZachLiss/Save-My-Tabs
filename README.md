@@ -1,4 +1,4 @@
-Save-My-Tabs
+Bookmark-My-Tabs
 ============
 
 Google Chrome bookmark manager. This extension:
