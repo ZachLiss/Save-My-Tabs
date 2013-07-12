@@ -1,58 +1,110 @@
-//window.onload = initialize;
+
 document.addEventListener('DOMContentLoaded', initialize);
 
 /// initialize the extension when the window loads
 function initialize() {
-	var d = document.getElementById("sel");
+
+if(localStorage.length == 0) {
+		/// we need to set up the initial localStorage settings
+		localStorage["default_max"] = "3";
+    	localStorage["default_sel"] = "1";
+    	localStorage["default_win"] = "cur";
+   	 	localStorage["hide_bookmarks"] = "false";
+    	localStorage["hide_quicklaunch"] = "false";
+	}
 	
-	if(localStorage["default_sel"] == 1) {
-		d.innerHTML = "<input type=\"checkbox\" id=\"selector\" checked=\"true\">";
+	if(localStorage["hide_bookmarks"] == "false") {
+		var d = document.getElementById("sel");
+	
+		if(localStorage["default_sel"] == 1) {
+			d.innerHTML = "<input type=\"checkbox\" id=\"selector\" checked=\"true\">";
+		} else {
+			d.innerHTML = "<input type=\"checkbox\" id=\"selector\">";
+		}
+
+		drawListOfTabs();
+
+		/// set up the proper eventListeners for the events
+		document.getElementById("bookmark_button").addEventListener('click',drawBookmarks,false);
+		document.getElementById("copy_button").addEventListener('click',copyUrls,false);
+		document.getElementById("selector").addEventListener('click',selectorClicked,false);
+		if(localStorage["default_sel"] == 1) {
+			document.getElementById("selector").value = "0";
+		} else {
+			document.getElementById("selector").value = "1";
+		}
 	} else {
-		d.innerHTML = "<input type=\"checkbox\" id=\"selector\">";
+		document.getElementById("bookmarkMain").innerHTML = "";
 	}
 
-	drawListOfTabs();
-
-	/// set up the proper eventListeners for the events
-	document.getElementById("bookmark_button").addEventListener('click',drawBookmarks,false);
-	document.getElementById("copy_button").addEventListener('click',copyUrls,false);
-	document.getElementById("selector").addEventListener('click',selectorClicked,false);
-	if(localStorage["default_sel"] == 1) {
-		document.getElementById("selector").value = "0";
+	if(localStorage["hide_quicklaunch"] == "false") {
+		drawDefaultOpenButtons();
+		if(localStorage["default_win"] == "cur") {
+			document.getElementById("rad").checked = true;
+		} else {
+			document.getElementById("rad2").checked = true;
+		}
 	} else {
-		document.getElementById("selector").value = "1";
+		document.getElementById("quickLaunchMain").innerHTML = "";
 	}
-
-	drawDefaultOpenButtons();
 }
 
 function drawListOfTabs() {
 
 	var div = document.getElementById("listOfTabs");
+	var result = false;
 
 	/// get all the current tabs
 	chrome.tabs.getAllInWindow(null, function(tabs) {
+
 		/// print out the number of opened tabs
 		if(tabs.length == 1) {
+			result = true;
    			document.getElementById("urlCount").innerHTML = "<strong>" + tabs.length + "</strong> URL";
    		} else {
    			document.getElementById("urlCount").innerHTML = "<strong>" + tabs.length +"</strong> URLs";
    		}
 
    		/// list the titles of the opened tabs
-   		var divText = ""//<p><strong>(Currently Opened Tabs)</strong></p>";
+   		var divText = "<hr/>";
    		
-		for(var i = 0; i < tabs.length; i++) {
-			if(localStorage["default_sel"] == 1) {
-				divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\" checked=\"true\"> " + tabs[i].title + "<br>";
-			} else {
-				divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\"> " + tabs[i].title + "<br>";
+		if(localStorage["default_sel"] == 1) {
+			for(var i = 0; i < tabs.length; i++) {
+				//
+				divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\" checked=\"true\"><span id=\"span_"+tabs[i].id+"\"> " + tabs[i].title + "</span><br>";
 			}
-   		} 
+		} else {
+			for(var i = 0; i < tabs.length; i++) {
+				divText += "<input type=\"checkbox\" class=\"url\" id=\"" + tabs[i].id + "\" value=\"" + tabs[i].url + "\"><span id=\"span_"+tabs[i].id+"\"> " + tabs[i].title + "</span><br>";
+			}
+		}
 
    		/// set the list of tabs with checkboxes in the html
    		div.innerHTML = divText;
+
+   		/// check the currently highlighted boxes if the option says to
+		if(localStorage["default_sel"] == 2) {
+			console.log("result: "+result);
+
+			if(result) { 
+				var e = document.getElementById("selector");
+				e.checked = true;
+				e.value = 0;
+			}
+
+			/// grab all of the tabs in the current window that are highlighted
+			chrome.tabs.query({highlighted: true, currentWindow: true}, function(tabs) {
+				tabs.forEach(function(tab) {
+					/// check off the box
+					document.getElementById(tab.id).checked = true;
+				});
+			});
+		}
 	});
+}
+
+function checkTheBox() {
+	console.log("im here in checkTheBox");
 }
 
 function selectorClicked() {
@@ -110,7 +162,7 @@ var newFolder = false;
 
 /// draw the bookmark section
 function drawBookmarkSection(bookmarks) {
-	divString = "<h2 id=\"bl\">Bookmark list</h2><div id=\"bookmark_list\"><select id=\"selected_bookmark\">";
+	divString = "<h2 id=\"bl\">Select Folder:</h2><div id=\"bookmark_list\"><select id=\"selected_bookmark\">";
 
 	drawBookmarkDropdownOptions(bookmarks, -1);
 
@@ -147,6 +199,7 @@ function newFolderClicked() {
 	newFolder = true;
 	var textField = document.getElementById("bookmark_text");
 	textField.innerHTML = "<input type=\"text\" placeholder=\" Folder Name\" id=\"folder_name\">";
+	document.getElementById("folder_name").focus();
 	document.getElementById("cancel_button").innerHTML = "Cancel";
 }
 
@@ -166,13 +219,14 @@ function saveClicked() {
 		chrome.bookmarks.create({parentId: pId, title: newTitle}, function(result) {
 			//var checkedUrls = document.querySelectorAll('.url:checked');
 			for (var i = 0; i < checkedUrls.length; i++){
-				chrome.bookmarks.create({parentId: result.id, title: checkedUrls[i].value, url: checkedUrls[i].value });
+				//console.log()
+				var t = document.getElementById("span_"+checkedUrls[i].id).innerHTML;
+				chrome.bookmarks.create({parentId: result.id, title: t, url: checkedUrls[i].value });
 			}	
 		});
 		drawBookmarks();
 		cancelClicked();
 	} else {
-		
 		for (var i = 0; i < checkedUrls.length; i++){
 			chrome.bookmarks.create({parentId: pId, title: checkedUrls[i].value, url: checkedUrls[i].value });
 		}	
@@ -203,6 +257,7 @@ function emptyNot() {
 
 /// variables needed
 var divString1;
+var moreString;
 var curMax;
 var bNum;
 
@@ -216,15 +271,17 @@ function drawDefaultOpenButtons() {
 /// draw the bookmark buttons
 function drawBookmarkButtonsSection(bookmarks, max) {
 	divString1 = "";
+	moreString = "";
 	curMax = 0;
 	bNum = 1;
 	drawBookmarkButtons(bookmarks, -1, max);
 	if(max == -1) {
-		divString1 += "<button id=\"more_button\" class=\"m_button f_button\">Less Bookmark Folders...</button>";
+		moreString += "<button id=\"more_button\" class=\"m_button f_button\">Less Bookmark Folders...</button>";
 	} else {
-		divString1 += "<button id=\"more_button\" class=\"m_button f_button\">More Bookmark Folders...</button>";
+		moreString += "<button id=\"more_button\" class=\"m_button f_button\">More Bookmark Folders...</button>";
 	}
-	document.getElementById("open_section").innerHTML = divString1;
+	document.getElementById("default_buttons").innerHTML = divString1;
+	document.getElementById("more_buttons").innerHTML = moreString;
 
 	/// add actionlisteners to the buttons
 	bNum--;
@@ -246,6 +303,12 @@ function moreOrLess() {
 	}
 }
 
+function openBookmarks() {
+	openedIds.forEach(function(bId){
+		simulateClick(bId);
+	});
+}
+
 /// draw the list of bookmark buttons (currently ignoring their depth in tree)
 function drawBookmarkButtons(bookmarks, depth, max) {
 	bookmarks.forEach(function(bookmark) {
@@ -253,7 +316,7 @@ function drawBookmarkButtons(bookmarks, depth, max) {
 	
 		//console.log(bookmark.id + ' - ' + bookmark.title + ' - ' + bookmark.children.title);
 		if(max != -1 && curMax < max) {
-			console.log(bookmark.id + ' - ' + bookmark.title + ' - ' + bookmark.children.title);
+			//console.log(bookmark.id + ' - ' + bookmark.title + ' - ' + bookmark.children.title);
 			if(bookmark.id == 0) { drawBookmarkButtons(bookmark.children, depth+1, max); }
 			else {
 				divString1 += "<div id=\"bd_"+bNum+"\">";
@@ -291,26 +354,30 @@ function maxOrMin() {
 	var s = "";
 	
 	if(html == "+") {
-		/// add all the urls to the div with id d_this.value
 		chrome.bookmarks.getChildren(id, function(bookmarks){
-			console.log(bookmarks);
+			//console.log(bookmarks);
 			var bIds = new Array();
 			bookmarks.forEach(function(bookmark) {
 				if(bookmark.url == null) return;
 				s += "<div id=\"xd_"+bookmark.id+"\"><button id=\"x_"+bookmark.id+"\" class=\"x_button\" value=\""+bookmark.id+"\">X</button>";
-				s += "<a id=\"a_"+bookmark.id+"\" value=\""+bookmark.url+"\" href=\"#\">"+bookmark.url+"</a></div>";
+				s += "<a id=\"a_"+bookmark.id+"\" value=\""+bookmark.url+"\" href=\"#\">"+bookmark.title+"</a></div>";
 				//s += "<a href=\""+bookmark.url+"\" target=\"_blank\">"+bookmark.url+"</a></div>";
 				bIds.push(bookmark.id);
+				
 			});
 
-			s += "<div id=\"delete_"+id+"\" value=\""+val+"\">";
-			s += "<button id=\"b_"+id+"\" class=\"d_button\" value=\""+val+"\">Delete: "+document.getElementById(val).innerHTML+"</button>";
-			s += "</div>";
-			console.log(s);
+			if(val != "1") {
+				s += "<div id=\"delete_"+id+"\" value=\""+val+"\">";
+				s += "<button id=\"b_"+id+"\" class=\"d_button\" value=\""+val+"\">Delete: "+document.getElementById(val).innerHTML+"</button>";
+				s += "</div>";
+			}
+			//console.log(s);
 			document.getElementById("d_"+val).innerHTML = s;
 
 			//document.getElementById("b_"+id).addEventListener('click',dClicked,false);
-			document.getElementById("b_"+id).addEventListener('click',confirmDeletion,false);
+			if(val != "1") {
+				document.getElementById("b_"+id).addEventListener('click',confirmDeletion,false);
+			}
 			for(var i = 0; i < bIds.length; i++) {
 				document.getElementById("x_"+bIds[i]).addEventListener('click',xClicked,false);
 				document.getElementById("a_"+bIds[i]).addEventListener('click',aClicked,false);
@@ -362,12 +429,15 @@ function xClicked() {
 /// open the url
 function aClicked() {
 	var win = document.getElementById("rad").checked;
-	if(win) {
-		chrome.tabs.create({url: this.innerHTML,active: false});
-		//drawListOfTabs();
-	} else {
-		chrome.windows.create({left: 10,focused: false, url: this.innerHTML});
-	}
+	var bId = this.id.substring(2,this.id.length);
+
+	chrome.bookmarks.get(bId, function(bookmarks) {
+		if(win) {
+			chrome.tabs.create({url: bookmarks[0].url,active: false});
+		} else {
+			chrome.windows.create({left: 10,focused: false, url: bookmarks[0].url});
+		}
+	});
 }
 
 /// open all urls in bookmark folder
@@ -385,9 +455,15 @@ function openBookmarks() {
 			urls.forEach(function(link) {
 				chrome.tabs.create({url: link, active: false});
 			});
-			//drawListOfTabs();
 		} else {
 			chrome.windows.create({left: 10,focused: false, url: urls});
 		}
 	});
 }
+
+/// function to simulate click to the given id
+// function simulateClick(eId) {
+// 	var evt = new MouseEvent('click', {'view': window, 'bubbles': true, 'cancelable': true});
+// 	var e = document.getElementById(eId);
+// 	e.dispatchEvent(evt);
+// }

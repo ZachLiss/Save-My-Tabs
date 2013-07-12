@@ -1,23 +1,31 @@
 * {
-	background-color: #F5F5F5;
-  	padding: 0px;
+  padding: 0px;
 	margin: 0px;
 }
 
 body{
-   padding: 10px 20px;
-   font-family: 'Dosis', sans-serif;
+  background-color: #F5F5F5;
+  padding: 10px 20px;
+  font-family: 'Dosis', sans-serif;
+}
+
+p {
+  padding: 8px;
 }
 
 #wrap {
 	padding: 10px;
 	width: 50%;
-    margin: 0 auto;
+  margin: 0 auto;
 	border: solid 1px #000;
 }
 
 #title {
 	margin-bottom: 5px;
+}
+
+#launchBox {
+  margin-left: 5px;
 }
 
 .f_button {

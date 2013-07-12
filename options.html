@@ -15,8 +15,14 @@
 
 <h2 id="title">Bookmark My Tabs Options</h2>
 
+<p>
+<input type="checkbox" id="bookBox" class="dropdown"> Hide Bookmark Section
+<input type="checkbox" id="launchBox" class="dropdown"> Hide Quick Launch
+</p>
+
+<p>
 Default Bookmark Buttons:
-<select id="num_default">
+<select id="num_default" class="dropdown">
 	<option value="1">1</option>
 	<option value="2">2</option>
 	<option value="3">3</option>
@@ -24,18 +30,32 @@ Default Bookmark Buttons:
 	<option value="5">5</option>
 	<option value="6">6</option>
 </select>
-<br>
+</p>
+
+<p>
 Default Urls Selected:
-<select id="sel_def">
+<select id="sel_def" class="dropdown">
 	<option value="1">Select All</option>
 	<option value="0">Select None</option>
+	<option value="2">Select Highlighted</option>
 </select>
+</p>
 
+<p>
+Default Open Window:
+<select id="win_def" class="dropdown">
+	<option value="cur">Current Window</option>
+	<option value="new">New Window</option>
+</select>
+</p>
+
+<p>
 <button id="save" class="f_button">Save</button>
-<br>
+</p>
+
 <div id="status"></div>
 
-<script src="options.js"></script>
+<script src="js/options.js"></script>
 </div>
 </body>
 
